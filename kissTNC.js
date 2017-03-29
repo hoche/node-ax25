@@ -178,7 +178,7 @@ var kissTNC = function(args) {
 				if(typeof err != "undefined")
 					self.emit("error", "kissTNC: Send error: " + err);
 				if(typeof result != "undefined")
-					self.emit("sent", "kissTNC: Send result: " + result);
+					self.emit("sent", "kissTNC: Send result: " + result, data);
 			}
 		);
 	}
