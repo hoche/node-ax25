@@ -2,24 +2,21 @@
 
 A KISS &amp; AX.25 packet radio stack for node.js.
 
+This is based off https://github.com/echicken/node-ax25, but I made a bunch of fixes.
+The original code, documentation, and examples are all echicken's.
+
 ---
 
 ###Installation
 
-```sh
-npm install ax25
-```
-
-Or:
-
 Assuming you have git installed, the following will clone this repository into a directory called 'node-ax25' under the current working directory, then attempt to install its dependencies:
 
 ```sh
-git clone https://github.com/echicken/node-ax25.git
+git clone https://github.com/hoche/node-ax25.git
 npm install
 ```
 
-This will get you the latest code, which may be more unstable than what's in the npm registry. :D
+The version in the npm repository is the echicken version, not this version.
 
 If you go this route and run the examples shown below, either rename the node-ax25 directory to "ax25" or modify the require() paths accordingly.
 
