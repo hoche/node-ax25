@@ -17,7 +17,8 @@ var Packet = function(args) {
 		'pid'					: ax25.Defs.PID_NONE,
 		'info'					: [],
 		'sent'					: false, // Relevant only to ax25.Session
-		'modulo128'				: false
+		'modulo128'				: false,
+        'fcs'                   : 0
 	};
 	
 	this.__defineGetter__(
@@ -334,9 +335,17 @@ var Packet = function(args) {
 		}
 	);
 	
+	this.__defineGetter__(
+		"fcs",
+		function() {
+			return properties.fcs;
+		}
+	);
+	
 	this.disassemble = function(frame) {
 
-		if(frame.length < 15)
+		//if(frame.length < 15)
+		if(frame.length < 17)
 			throw "ax25.Packet.disassemble: Frame does not meet minimum length.";
 
 		// Address Field: Destination subfield
@@ -375,10 +384,12 @@ var Packet = function(args) {
 			properties.type = control&ax25.Defs.U_FRAME_MASK;
 			if(properties.type == ax25.Defs.U_FRAME_UI) {
 				properties.pid = frame.shift();
+                properties.fcs = (frame.pop() << 8) + frame.pop();
 				properties.info = frame;
 			} else if(properties.type == ax25.Defs.U_FRAME_XID && frame.length > 0) {
 				// Parse XID parameter fields and break out to properties
 			} else if(properties.type == ax25.Defs.U_FRAME_TEST && frame.length > 0) {
+                properties.fcs = (frame.pop() << 8) + frame.pop();
 				properties.info = frame;
 			}
 		} else if((control&ax25.Defs.U_FRAME) == ax25.Defs.S_FRAME) {
@@ -404,6 +415,7 @@ var Packet = function(args) {
 				properties.pollFinal = (control&ax25.Defs.PF)>>4;
 			}
 			properties.pid = frame.shift();
+            properties.fcs = (frame.pop() << 8) + frame.pop();
 			properties.info = frame;
 		} else {
 			throw "ax25.Packet.dissassemble: Invalid packet.";
@@ -518,6 +530,12 @@ var Packet = function(args) {
 			for(var i = 0; i < properties.info.length; i++)
 				frame.push(properties.info[i]);
 		}
+        
+        // FCS field
+        // The frame check sequence (FCS) is a 16-bit CRC-CCITT
+        // We just stuff it with all zeros here.
+        frame.push(0);
+        frame.push(0);
 		
 		return frame;
 	}
